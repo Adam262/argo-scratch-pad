@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: dind-test
+spec:
+  entrypoint: entrypoint
+  arguments:
+    parameters:
+      - name: name
+        value: "world"
+  templates:
+    - name: entrypoint
+      steps: 
+        - - name: hello
+            template: hello
+            arguments:
+              parameters: 
+                - name: name
+                  value: "{{workflow.parameters.name}}"
+    - name: hello
+      inputs:
+        parameters:
+          - name: name
+      container:
+        image: docker/whalesay
+        command:
+          - cowsay
+        args:
+          - "Hello {{inputs.parameters.name}}"
