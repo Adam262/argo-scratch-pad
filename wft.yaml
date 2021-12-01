@@ -30,10 +30,14 @@ spec:
         args:
           - "Hello {{inputs.parameters.name}}"
     - name: dind-sidecar
-      container:
+      script:
         image: docker:19.03.13
-        command: [sh, -c]
-        args: ["until docker ps; do sleep 3; done; docker run --rm debian:latest cat /etc/os-release"]
+        command: [sh]
+        source: |
+          set -euo pipefail
+          until docker ps >/dev/null; do sleep 3; done
+          docker run --rm debian:latest
+          cat /etc/os-release
         env:
         - name: DOCKER_HOST               # the docker daemon can be access on the standard port on localhost
           value: 127.0.0.1
